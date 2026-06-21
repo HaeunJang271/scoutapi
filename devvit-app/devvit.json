@@ -1,0 +1,52 @@
+{
+  "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
+  "name": "scoutsstats",
+  "post": {
+    "dir": "dist/client",
+    "entrypoints": {
+      "default": {
+        "inline": true,
+        "entry": "splash.html"
+      },
+      "game": {
+        "entry": "game.html"
+      }
+    }
+  },
+  "server": {
+    "dir": "dist/server",
+    "entry": "index.cjs"
+  },
+  "permissions": {
+    "redis": true,
+    "reddit": true
+  },
+  "menu": {
+    "items": [
+      {
+        "label": "Create Analyzer Dashboard",
+        "description": "Create a Girl Scout community analysis post",
+        "location": "subreddit",
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/post-create"
+      },
+      {
+        "label": "Refresh r/girlscouts Data",
+        "description": "Fetch latest posts from r/girlscouts",
+        "location": "subreddit",
+        "forUserType": "moderator",
+        "endpoint": "/internal/menu/refresh-data"
+      }
+    ]
+  },
+  "triggers": {
+    "onAppInstall": "/internal/triggers/on-app-install"
+  },
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build"
+  },
+  "dev": {
+    "subreddit": "scoutsstats_dev"
+  }
+}

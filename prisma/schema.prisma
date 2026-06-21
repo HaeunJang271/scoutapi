@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  redditId  String   @unique
+  title     String
+  body      String   @default("")
+  score     Int      @default(0)
+  comments  Int      @default(0)
+  author    String
+  createdAt DateTime
+  permalink String
+  flair     String?
+  topic     String?
+  category  String   @default("기타")
+  country   String   @default("US")
+  createdAtDb DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([createdAt])
+  @@index([country])
+}
+
+model Keyword {
+  id        String @id @default(cuid())
+  keyword   String @unique
+  frequency Int    @default(0)
+
+  @@index([frequency])
+}
+
+model Topic {
+  id    String @id @default(cuid())
+  name  String @unique
+  count Int    @default(0)
+}
+
+model Analysis {
+  id        String   @id @default(cuid())
+  summary   String   @db.Text
+  type      String   @default("general")
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([createdAt])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+model Country {
+  id          String @id @default(cuid())
+  code        String @unique
+  name        String
+  subreddit   String?
+  description String?
+
+  @@index([code])
+}
