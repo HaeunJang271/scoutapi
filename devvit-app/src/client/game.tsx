@@ -3,17 +3,20 @@ import './index.css';
 import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Dashboard } from './components/Dashboard';
+import { PostCard, PostDetailModal } from './components/PostDetail';
 import { useAnalyzer } from './hooks/useAnalyzer';
+import { usePostDetail } from './hooks/usePostDetail';
 import { filterGirlScoutKeywords } from '../shared/domain-terms';
 
 type Tab = 'overview' | 'keywords' | 'posts';
 
 export const App = () => {
   const { data, username, isModerator, loading, refreshing, error, refresh } = useAnalyzer();
+  const { post, loading: postLoading, error: postError, openPost, closePost } = usePostDetail();
   const [tab, setTab] = useState<Tab>('overview');
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen overflow-x-hidden bg-gray-50 dark:bg-gray-900">
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/90 backdrop-blur dark:border-gray-700 dark:bg-gray-800/90">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
@@ -52,7 +55,7 @@ export const App = () => {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4 py-6">
+      <main className="mx-auto min-w-0 max-w-4xl overflow-x-hidden px-4 py-6">
         {loading && (
           <div className="flex items-center justify-center py-20">
             <p className="text-gray-500">Loading dashboard...</p>
@@ -73,7 +76,7 @@ export const App = () => {
           </div>
         )}
 
-        {data && tab === 'overview' && <Dashboard data={data} />}
+        {data && tab === 'overview' && <Dashboard data={data} onPostClick={openPost} />}
 
         {data && tab === 'keywords' && (() => {
           const domainKeywords = data.domainKeywords?.length
@@ -107,34 +110,17 @@ export const App = () => {
         {data && tab === 'posts' && (
           <div className="space-y-3">
             {data.recentPosts.map((post) => (
-              <div
-                key={post.id}
-                className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800"
-              >
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700">
-                    {post.category}
-                  </span>
-                  {post.flair && (
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
-                      {post.flair}
-                    </span>
-                  )}
-                </div>
-                <h3 className="mt-2 font-medium text-gray-900 dark:text-white">{post.title}</h3>
-                {post.body && (
-                  <p className="mt-1 line-clamp-2 text-sm text-gray-500">{post.body}</p>
-                )}
-                <div className="mt-2 flex gap-3 text-xs text-gray-400">
-                  <span>u/{post.author}</span>
-                  <span>↑{post.score}</span>
-                  <span>💬{post.comments}</span>
-                  <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                </div>
-              </div>
+              <PostCard key={post.id} post={post} onClick={openPost} />
             ))}
           </div>
         )}
+
+        <PostDetailModal
+          post={post}
+          loading={postLoading}
+          error={postError}
+          onClose={closePost}
+        />
 
         {username && (
           <p className="mt-8 text-center text-xs text-gray-400">

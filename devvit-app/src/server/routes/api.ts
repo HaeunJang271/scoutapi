@@ -4,6 +4,7 @@ import type {
   DashboardData,
   ErrorResponse,
   InitResponse,
+  PostDetailResponse,
   RefreshResponse,
 } from '../../shared/api';
 import {
@@ -12,6 +13,7 @@ import {
   CACHE_TTL_SECONDS,
   fetchGirlScoutPosts,
 } from '../services/analyzer';
+import { fetchPostDetail } from '../services/post-detail';
 
 export const api = new Hono();
 
@@ -91,6 +93,23 @@ api.post('/refresh', async (c) => {
     console.error('Refresh error:', error);
     const message =
       error instanceof Error ? error.message : 'Failed to fetch Reddit data';
+    return c.json<ErrorResponse>({ status: 'error', message }, 500);
+  }
+});
+
+api.get('/posts/:postId', async (c) => {
+  const postId = c.req.param('postId');
+  if (!postId) {
+    return c.json<ErrorResponse>({ status: 'error', message: 'Post ID is required' }, 400);
+  }
+
+  try {
+    const post = await fetchPostDetail(postId);
+    return c.json<PostDetailResponse>({ type: 'postDetail', post });
+  } catch (error) {
+    console.error('Post detail error:', error);
+    const message =
+      error instanceof Error ? error.message : 'Failed to load post details';
     return c.json<ErrorResponse>({ status: 'error', message }, 500);
   }
 });

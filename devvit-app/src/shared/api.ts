@@ -59,3 +59,30 @@ export type ErrorResponse = {
   status: 'error';
   message: string;
 };
+
+export interface PostComment {
+  id: string;
+  author: string;
+  body: string;
+  score: number;
+  createdAt: string;
+}
+
+export interface PostDetail {
+  id: string;
+  title: string;
+  body: string;
+  score: number;
+  comments: number;
+  author: string;
+  createdAt: string;
+  permalink: string;
+  flair: string | null;
+  category: Category;
+  commentList: PostComment[];
+}
+
+export type PostDetailResponse = {
+  type: 'postDetail';
+  post: PostDetail;
+};

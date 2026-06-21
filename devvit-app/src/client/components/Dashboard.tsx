@@ -1,5 +1,6 @@
 import type { DashboardData } from '../../shared/api';
 import { filterGirlScoutKeywords } from '../../shared/domain-terms';
+import { PostCard } from './PostDetail';
 
 function formatNumber(n: number): string {
   return new Intl.NumberFormat('en-US').format(n);
@@ -70,7 +71,13 @@ function KpiCard({
   );
 }
 
-export function Dashboard({ data }: { data: DashboardData }) {
+export function Dashboard({
+  data,
+  onPostClick,
+}: {
+  data: DashboardData;
+  onPostClick: (postId: string) => void;
+}) {
   const domainKeywords =
     data.domainKeywords?.length
       ? data.domainKeywords
@@ -181,22 +188,7 @@ export function Dashboard({ data }: { data: DashboardData }) {
         </h3>
         <div className="space-y-3">
           {data.recentPosts.map((post) => (
-            <div
-              key={post.id}
-              className="border-b border-gray-100 pb-3 last:border-0 dark:border-gray-700"
-            >
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300">
-                  {post.category}
-                </span>
-                <span className="text-xs text-gray-400">
-                  ↑{post.score} · 💬{post.comments}
-                </span>
-              </div>
-              <p className="mt-1 text-sm font-medium text-gray-800 dark:text-gray-100">
-                {post.title}
-              </p>
-            </div>
+            <PostCard key={post.id} post={post} onClick={onPostClick} compact />
           ))}
         </div>
       </div>

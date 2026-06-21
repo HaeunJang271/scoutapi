@@ -1,1 +1,9 @@
 @import 'tailwindcss';
+
+@layer utilities {
+  .text-wrap-safe {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
